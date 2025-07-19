@@ -27,7 +27,8 @@
 
 ## 📸 Screenshots
 
-> Add images here (postscholarship page, search view, document preview, etc.)
+> Add images here (<img width="1919" height="937" alt="image" src="https://github.com/user-attachments/assets/fbcc514a-0c24-4fde-ba10-80df1175c270" />
+)
 
 ---
 
