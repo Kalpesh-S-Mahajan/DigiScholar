@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiScholar - Scholarship Management Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/scholarship-rNergqoXC7tpoL1zKijCGSpwtIcqnD.webp') center/cover no-repeat fixed;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.4), 
+                rgba(30, 58, 138, 0.3),
+                rgba(16, 185, 129, 0.2)
+            );
+            z-index: 1;
+        }
+
+        .floating-elements {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .floating-icon {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.15);
+            animation: float 8s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .floating-icon:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { top: 25%; right: 15%; animation-delay: 1.5s; }
+        .floating-icon:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 3s; }
+        .floating-icon:nth-child(4) { bottom: 20%; right: 25%; animation-delay: 4.5s; }
+        .floating-icon:nth-child(5) { top: 60%; left: 8%; animation-delay: 6s; }
+        .floating-icon:nth-child(6) { top: 70%; right: 12%; animation-delay: 7.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-30px) rotate(10deg); opacity: 1; }
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 3;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .top-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .project-title {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff, #f0f9ff, #dbeafe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 255, 255, 0.3); }
+            100% { text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 255, 255, 0.5); }
+        }
+
+        .project-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 4rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+        }
+
+        .welcome-description {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 25px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .login-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .admin-icon {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(248, 113, 113, 0.8));
+        }
+
+        .student-icon {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(96, 165, 250, 0.8));
+        }
+
+        .university-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(52, 211, 153, 0.8));
+        }
+
+        .card-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-description {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 1.2rem 2.5rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .features-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .features-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            color: #10B981;
+            font-size: 1.3rem;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        @media (max-width: 1200px) {
+            .project-title {
+                font-size: 3rem;
+            }
+            
+            .login-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .project-title {
+                font-size: 2.5rem;
+            }
+
+            .project-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .welcome-description {
+                font-size: 1.1rem;
+            }
+
+            .login-card {
+                padding: 2rem;
+            }
+
+            .card-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkle 2s linear infinite;
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-overlay"></div>
+    
+    <div class="floating-elements">
+        <i class="fas fa-graduation-cap floating-icon" style="font-size: 4rem;"></i>
+        <i class="fas fa-book floating-icon" style="font-size: 3rem;"></i>
+        <i class="fas fa-university floating-icon" style="font-size: 4.5rem;"></i>
+        <i class="fas fa-award floating-icon" style="font-size: 2.5rem;"></i>
+        <i class="fas fa-lightbulb floating-icon" style="font-size: 3.5rem;"></i>
+        <i class="fas fa-star floating-icon" style="font-size: 3rem;"></i>
+    </div>
+
+    <div class="main-container">
+        <div class="top-header">
+            <h1 class="project-title pulse">DigiScholar</h1>
+            <p class="project-subtitle">Scholarship Management System</p>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="welcome-section">
+                <h2 class="welcome-title">Welcome to Your Educational Future</h2>
+                <p class="welcome-description">
+                    Empowering education through seamless scholarship management. Connect students, universities, 
+                    and administrators in one comprehensive platform designed to unlock academic potential and 
+                    create opportunities for lifelong learning.
+                </p>
+            </div>
+
+            <div class="login-grid">
+                <div class="login-card" onclick="handleLogin('admin')">
+                    <div class="card-icon admin-icon pulse">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="card-title">Admin Portal</h3>
+                    <p class="card-description">
+                        Comprehensive system management, user oversight, scholarship program administration, 
+                        and detailed analytics for optimal platform performance.
+                    </p>
+                    <button class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Access Admin Dashboard
+                    </button>
+                </div>
+
+                <div class="login-card" onclick="handleLogin('student')">
+                    <div class="card-icon student-icon pulse">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3 class="card-title">Student Portal</h3>
+                    <p class="card-description">
+                        Discover thousands of scholarships, submit applications seamlessly, track your progress, 
+                        and manage your academic funding journey with ease.
+                    </p>
+                    <button class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Enter Student Portal
+                    </button>
+                </div>
+
+                <div class="login-card" onclick="handleLogin('university')">
+                    <div class="card-icon university-icon pulse">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3 class="card-title">University Portal</h3>
+                    <p class="card-description">
+                        Manage institutional scholarships, review applications efficiently, connect with talented 
+                        students, and enhance your university's scholarship programs.
+                    </p>
+                    <button class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> University Access
+                    </button>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>&copy; 2025 DigiScholar. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle login card clicks
+        function handleLogin(userType) {
+            const card = event.currentTarget;
+            
+            // Add click animation
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                card.style.transform = 'translateY(-15px) scale(1.02)';
+            }, 200);
+
+            // Create sparkle effect
+            createSparkles(card);
+
+            // Simulate login process
+            setTimeout(() => {
+                switch(userType) {
+                    case 'admin':
+                        window.location.href = 'adminlogin.jsp'; // Replace with actual admin URL
+                        break;
+                    case 'student':
+                        window.location.href = 'studentlogin.jsp'; // Replace with actual student URL
+                        break;
+                    case 'university':
+                        window.location.href = 'universitylogin.jsp'; // Replace with actual university URL
+                        break;
+                }
+            }, 400);
+        }
+
+        // Create sparkle effect
+        function createSparkles(element) {
+            for (let i = 0; i < 12; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                element.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.parentNode.removeChild(sparkle);
+                    }
+                }, 2000);
+            }
+        }
+
+        // Enhanced particle effect
+        function createParticles(x, y) {
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.width = '6px';
+                particle.style.height = '6px';
+                particle.style.backgroundColor = '#ffffff';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '1000';
+                particle.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.8)';
+                
+                document.body.appendChild(particle);
+                
+                const angle = (i / 8) * Math.PI * 2;
+                const velocity = 150;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+                
+                let opacity = 1;
+                let posX = x;
+                let posY = y;
+                
+                const animate = () => {
+                    posX += vx * 0.02;
+                    posY += vy * 0.02;
+                    opacity -= 0.025;
+                    
+                    particle.style.left = posX + 'px';
+                    particle.style.top = posY + 'px';
+                    particle.style.opacity = opacity;
+                    
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        document.body.removeChild(particle);
+                    }
+                };
+                
+                requestAnimationFrame(animate);
+            }
+        }
+
+        // Initialize animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.login-card');
+            
+            // Enhanced hover effects
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-15px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Staggered card animation
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.8s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 300 + 500);
+            });
+
+            // Enhanced particle effect on click
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.login-card')) {
+                    createParticles(e.pageX, e.pageY);
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.target.closest('.login-card')) {
+                    e.target.closest('.login-card').click();
+                }
+            });
+
+            // Add accessibility attributes
+            cards.forEach(card => {
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
+                const title = card.querySelector('.card-title').textContent;
+                const description = card.querySelector('.card-description').textContent;
+                card.setAttribute('aria-label', `${title} - ${description}`);
+            });
+
+            // Animate title on load
+            setTimeout(() => {
+                document.querySelector('.project-title').style.animation = 'titleGlow 3s ease-in-out infinite alternate';
+            }, 1000);
+        });
+
+        // Add dynamic background effects
+        setInterval(() => {
+            const sparkle = document.createElement('div');
+            sparkle.style.position = 'fixed';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.width = '2px';
+            sparkle.style.height = '2px';
+            sparkle.style.background = 'white';
+            sparkle.style.borderRadius = '50%';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.zIndex = '2';
+            sparkle.style.animation = 'sparkle 3s linear';
+            
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                if (sparkle.parentNode) {
+                    sparkle.parentNode.removeChild(sparkle);
+                }
+            }, 3000);
+        }, 2000);
+    </script>
+</body>
+</html>
